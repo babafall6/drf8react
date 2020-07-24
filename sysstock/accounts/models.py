@@ -17,7 +17,7 @@ class Profile(models.Model):
     )
 
     profile = models.CharField(choices=USER_PROFILE, max_length=20, default="RPC")
-    user = models.OneToOneField(User, related_name="profile")
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.profile
