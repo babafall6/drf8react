@@ -1,41 +1,28 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import MyUser
-import re
+from .models import Profile
 
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
+    profile = serializers.StringRelatedField()
+
     class Meta:
-        model = MyUser
-        fields = ("id", "username", "full_name", "profile")
+        model = User
+        fields = ("id", "username", "email", "profile")
 
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyUser
-        fields = ("id", "username", "email", "full_name", "password", "profile")
+        model = User
+        fields = ("id", "username", "password")
         extra_kwargs = {"password": {"write_only": True}}
-
-    def validate_username(self, value):
-        """
-            Verifier que le username a un format 
-            numero telephone de 9 chiffres
-            du senegal
-        """
-        pattern = re.compile(r"\b7(0|6|7|8)\d{7}\b")
-        if not pattern.match(value):
-            raise serializers.ValidationError("It must be a valide phone number.")
-        return value
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            validated_data["username"],
-            validated_data["email"],
-            validated_data["full_name"],
-            validated_data["password"],
-            validated_data["profile"],
+            validated_data["username"], validated_data["password"]
         )
         return user
 

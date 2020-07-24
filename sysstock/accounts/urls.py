@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .api import RegisterAPI, LoginAPI, UserAPI
+from .views import RegisterAPI, LoginAPI, UserAPI
 from knox import views as knox_views
 
 

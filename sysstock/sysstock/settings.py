@@ -119,7 +119,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-AUTH_USER_MODEL = "accounts.MyUser"
+# AUTH_USER_MODEL = "accounts.MyUser"
 
 # Authentication classe with knox
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",)}

@@ -1,20 +1,23 @@
-from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+# Create your models here.
+from django.contrib.auth.models import User
 from django.db import models
 
 
-class MyUser(AbstractUser):
+class Profile(models.Model):
     USER_PROFILE = (
-        (1, "Administrateur"),
-        (2, "Banque"),
-        (3, "Responsable Point Collecte"),
-        (4, "Producteur"),
-        (5, "Commercant"),
-        (6, "Manager Marché"),
-        (7, "Tiers"),
+        ("ADMIN", "Administrateur"),
+        ("BANK", "Banque"),
+        ("RPC", "Responsable Point Collecte"),
+        ("PROD", "Producteur"),
+        ("COM", "Commercant"),
+        ("MAN_MARKET", "Manager Marché"),
+        ("TIER", "Tier"),
     )
 
-    profile = models.PositiveSmallIntegerField(choices=USER_PROFILE, default=3)
-    full_name = models.CharField(blank=True, max_length=255)
+    profile = models.CharField(choices=USER_PROFILE, max_length=20, default="RPC")
+    user = models.OneToOneField(User, related_name="profile")
 
     def __str__(self):
-        return self.full_name
+        return self.profile
