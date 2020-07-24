@@ -8,14 +8,14 @@ import re
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ("id", "username", "full_name")
+        fields = ("id", "username", "full_name", "profile")
 
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ("id", "username", "email", "full_name", "password")
+        fields = ("id", "username", "email", "full_name", "password", "profile")
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_username(self, value):
@@ -35,6 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             validated_data["email"],
             validated_data["full_name"],
             validated_data["password"],
+            validated_data["profile"],
         )
         return user
 
