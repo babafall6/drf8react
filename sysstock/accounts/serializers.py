@@ -20,7 +20,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ["id", "profile", "user"]
+        fields = ["id", "privilege", "user"]
         read_only_fields = ("user",)
 
 
@@ -32,6 +32,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "password", "profile"]
         extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop("profile")
+        user = User.objects.create_user(**validated_data)
+
+        Profile.objects.create(user=user, **profile_data)
+
+        return user
 
     def validate_username(self, value):
         """
@@ -45,13 +53,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                 "La valeur doit etre un numero telephone Senegal."
             )
         return value
-
-    def create(self, validated_data):
-        profile_data = validated_data.pop("profile")
-        user = User.objects.create_user(**validated_data)
-        for profile in profile_data:
-            Profile.objects.create(user=user, **profile)
-        return user
 
 
 # Login Serializer

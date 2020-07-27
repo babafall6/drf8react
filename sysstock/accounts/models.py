@@ -16,8 +16,9 @@ class Profile(models.Model):
         ("TIER", "Tier"),
     )
 
-    profile = models.CharField(choices=USER_PROFILE, max_length=20, default="RPC")
+    privilege = models.CharField(max_length=20, default="PROD", choices=USER_PROFILE)
+
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.profile
+        return self.privilege
