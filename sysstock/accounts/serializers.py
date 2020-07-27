@@ -2,12 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Profile
-
-# Profile Serialization
-class ProfilSerialization(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = "__all__"
+import re
 
 
 # User Serializer
@@ -19,21 +14,43 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "email", "profile")
 
 
+# ProfileSerializer
+class ProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Profile
+        fields = ["id", "profile", "user"]
+        read_only_fields = ("user",)
+
+
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
-    profile = ProfilSerialization()
+    profile = ProfileSerializer()
 
     class Meta:
         model = User
-        fields = ("id", "username", "password", "profile")
+        fields = ["id", "username", "password", "profile"]
         extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_username(self, value):
+        """
+            Verifier que le username a un format 
+            numero telephone de 9 chiffres
+            du senegal
+        """
+        pattern = re.compile(r"\b7(0|6|7|8)\d{7}\b")
+        if not pattern.match(value):
+            raise serializers.ValidationError(
+                "La valeur doit etre un numero telephone Senegal."
+            )
+        return value
 
     def create(self, validated_data):
         profile_data = validated_data.pop("profile")
-        user = User.objects.create_user(
-            validated_data["username"], validated_data["password"]
-        )
-        Profile.objects.create(user=user, **profile_data)
+        user = User.objects.create_user(**validated_data)
+        for profile in profile_data:
+            Profile.objects.create(user=user, **profile)
         return user
 
 
